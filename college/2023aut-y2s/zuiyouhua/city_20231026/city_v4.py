@@ -141,10 +141,40 @@ def update(frame):
     for i, (x, y) in enumerate(current_coordinates):
         ax.text(x, y, city_names[i], fontsize=8, fontproperties=font_properties)
     # 更新标题，显示迭代次数
-    ax.set_title(f'Iteration {frame+1}')
+    ax.set_title('City Map Using CG ' + f'(Iteration {frame})')
 
+def update1():
+    # 设置字体和启用汉字支持
+    font_properties = FontProperties(fname='SimHei.ttf')  # 替换为包含汉字的TTF字体文件路径
+    plt.rcParams['font.sans-serif'] = ['SimHei']  # 替换为你的TTF字体名称
+    plt.rcParams['axes.unicode_minus'] = False  # 处理坐标轴负号显示问题
 
-    # plt.title('City Map Using conjugate gradient')
+    # 定义不同城市和轨迹的颜色
+    city_colors = global_city_colors
+    track_colors = city_colors
+
+    # 获取当前迭代的城市坐标
+    # current_coordinates = results[frame]
+    for i in range(10, len(results), 10):
+        current_coordinates = results[i].reshape(-1, 2)
+        # 绘制城市的轨迹
+        for j in range(len(current_coordinates)):
+            x, y = current_coordinates[j]
+            track_color = track_colors[j]
+            previous_coordinates = results[i - 10].reshape(-1, 2)
+            x_values = [previous_coordinates[j, 0], x]
+            y_values = [previous_coordinates[j, 1], y]
+            plt.plot(x_values, y_values, color=track_color, linewidth=3, linestyle='-', alpha=0.2)
+
+    
+    # 更新散点图的数据
+    sc.set_offsets(np.c_[current_coordinates[:, 0], current_coordinates[:, 1]])
+    
+    # 在图上添加城市名称
+    for i, (x, y) in enumerate(current_coordinates):
+        ax.text(x, y, city_names[i], fontsize=8, fontproperties=font_properties)
+
+    plt.title('City Map Using BFGS ' + f'(Iteration {len(results)})')
     # plt.xlabel('X Coordinate')
     # plt.ylabel('Y Coordinate')
     # plt.grid(True)
@@ -203,28 +233,24 @@ def main():
     ]
 
     # 调用函数并传入CSV文件路径
-    file_path = 'city.csv'  # 替换为你的CSV文件路径
+    file_path = 'city.csv'
     distance_matrix, city_names = read_distance_matrix_from_csv(file_path)
 
-    # print(distance_matrix)
-    # check_symmetry(distance_matrix)
     fix_asymmetry(distance_matrix)
 
     # 假设的城市坐标（初始值），这里使用随机值作为初始值
     num_cities = 34
     city_coordinates = np.random.uniform(low=-2000, high=2000, size=(num_cities, 2)) 
-    # haerbin = city_names.index('哈尔滨')
-    # haerbin = 4
-    # city_coordinates[haerbin]=[3000,3000]
-    # 实际城市之间的距离矩阵（根据你的数据）
     actual_distances = distance_matrix
 
 
     methods_list=["CG", "Nelder-Mead", "BFGS"]
-    # 初始化结果列表
+    # 结果列表
     results = []
     # 使用Scipy的 minimize 函数来最小化目标函数
     result = methods(methods_list[0]) 
+    # result = methods(methods_list[1]) 
+    # result = methods(methods_list[2]) 
 
 
     # 最优的城市坐标
@@ -240,7 +266,11 @@ def main():
     sc = ax.scatter(city_coordinates[:, 0], city_coordinates[:, 1],  color = global_city_colors)
 
     
-    ani = FuncAnimation(fig, update, frames=len(results), repeat=False, interval=500)
+    ani = FuncAnimation(fig, update, frames=len(results), repeat=False, interval=300)
+
+    manager = plt.get_current_fig_manager()
+    manager.window.showMaximized()
+    # update1()
 
 
     # 文件名和路径，根据需要修改
