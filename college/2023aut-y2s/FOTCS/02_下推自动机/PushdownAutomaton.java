@@ -2,8 +2,8 @@
  * @Author: ljx li.junxian@outlook.com
  * @Date: 2023-10-17 18:42:01
  * @LastEditors: ljx li.junxian@outlook.com
- * @LastEditTime: 2023-10-17 20:11:30
- * @FilePath: \2023aut-y2s\FOTCS\02_下推自动机\PushdownAutomaton.java
+ * @LastEditTime: 2023-11-02 09:40:17
+ * @FilePath: \FOTCS\02_下推自动机\PushdownAutomaton.java
  * @Description: 
  * 
  * Copyright (c) 2023 by Jx L, All Rights Reserved. 
@@ -64,7 +64,7 @@ public class PushdownAutomaton {
     }
 
     public static void main(String[] args) {
-        BalancedBCStringChecker checker = new BalancedBCStringChecker();
+        PushdownAutomaton checker = new PushdownAutomaton();
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
